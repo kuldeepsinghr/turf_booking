@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/user.routes.js";
 import ownerRoutes from "./routes/owner.routes.js";
+import turfRoutes from "./routes/turf.routes.js";
 
 dotenv.config();
 
@@ -31,3 +32,4 @@ connectDB().then(() => {
 // Routes
 app.use("/api/user", userRoutes); // All user-related routes under /api/user
 app.use("/api/owners", ownerRoutes); // All owner-related routes under /api/owners
+app.use("/api/turfs", turfRoutes); // All turf-related routes under /api/turfs

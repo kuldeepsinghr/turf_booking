@@ -2,13 +2,18 @@ import jwt from "jsonwebtoken";
 
 export function verifyToken(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
+    // console.log("Cookies:", req.cookies);
 
-    if (!authHeader) {
-      return res.status(401).json({ message: "No token provided" });
+    // ✅ get token from cookie OR header
+    let token = req.cookies.token;
+
+    if (!token && req.headers.authorization) {
+      token = req.headers.authorization.split(" ")[1];
     }
 
-    const token = authHeader.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
