@@ -1,13 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage    from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
-import { DashboardPage } from './pages/dashboard/DashboardPage'
+import  DashboardPage  from './pages/dashboard/DashboardPage'
 import { Toaster } from "react-hot-toast";
 
-// Static dashboard placeholder — we'll build this next step
-const Dashboard = () => (
-  <div style={{ color: '#64748b', padding: '2rem' }}>Dashboard — coming next step</div>
-)
+
 
 function App() {
   return (

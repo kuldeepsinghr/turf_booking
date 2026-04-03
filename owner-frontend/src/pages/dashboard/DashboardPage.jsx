@@ -1,9 +1,46 @@
-import React from 'react'
+import { useState } from "react";
+import Sidebar from "../../components/dashboard/Sidebar";
+import Topbar from "../../components/dashboard/Topbar";
 
-export const DashboardPage = () => {
+import DashboardHome from "./DashboardHome";
+import TurfsPage from "./TurfsPage";
+import SlotsPage from "./SlotsPage";
+import BookingsPage from "./BookingsPage";
+
+// import "../../styles/dashboard.css";
+
+export default function DashboardPage() {
+  const [page, setPage] = useState("home");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const pages = {
+    home: DashboardHome,
+    turfs: TurfsPage,
+    slots: SlotsPage,
+    bookings: BookingsPage,
+  };
+
+  const PageComponent = pages[page];
+
   return (
-    <div className='bg-red-600 w-2xl px-4 py-6 my-10'>
-        <h1>Dashboard</h1>
+    <div className="flex min-h-screen bg-[#0b1120]">
+      
+      <Sidebar
+        active={page}
+        setActive={setPage}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+      />
+
+      <div className="flex-1 flex flex-col overflow-hidden">
+        
+        <Topbar page={page} setMobileOpen={setMobileOpen} />
+
+        <main className="flex-1 p-7 overflow-auto">
+          <PageComponent setPage={setPage} />
+        </main>
+
+      </div>
     </div>
-  )
+  );
 }
