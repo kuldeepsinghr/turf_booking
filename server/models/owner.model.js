@@ -37,6 +37,15 @@ export async function findOwnerById(ownerId) {
   return rows[0];
 }
 
+export const findOwnerByMobile = async (mobile) => {
+  const db = getDB();
+  const [rows] = await db.execute(
+    "SELECT * FROM owners WHERE mobile = ?",
+    [mobile]
+  );
+  return rows[0];
+};
+
 // update owner
 export async function updateOwner(ownerId, name, mobile) {
   const db = getDB();

@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import toast from "react-hot-toast";
+
 
 const RegisterPage = () => {
+  const API = import.meta.env.VITE_API_URL
   const [step, setStep]         = useState(0)   // 0 = step1, 1 = step2, 2 = success
   const [showPass, setShowPass] = useState(false)
   const [errors, setErrors]     = useState({})
@@ -9,6 +13,7 @@ const RegisterPage = () => {
   const [form, setForm]         = useState({
     name: '', email: '', mobile: '', password: ''
   })
+  const navigate = useNavigate()
 
   const set = (field) => (e) => {
     setForm(f => ({ ...f, [field]: e.target.value }))
@@ -40,16 +45,50 @@ const RegisterPage = () => {
     if (validateStep0()) setStep(1)
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!validateStep1()) return
-    setLoading(true)
-    // Static: simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      setStep(2)
-    }, 1200)
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validateStep1()) return;
+
+  setLoading(true);
+
+  try {
+    const res = await axios.post(
+      `${API}/api/owners/register`,
+      {
+        name: form.name,
+        email: form.email,
+        mobile: form.mobile,
+        password: form.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    const data = res.data;
+
+    // ✅ ONLY ONE SUCCESS TOAST
+    toast.success(data?.message || "Registration successful 🎉");
+
+    // ✅ navigate AFTER success
+    navigate("/dashboard");
+
+  } catch (err) {
+    console.error(err);
+
+    const message =
+      err.response?.data?.message || "Something went wrong";
+
+    // ❌ ERROR TOAST
+    toast.error(message);
+
+    setErrors({ api: message });
+
+  } finally {
+    setLoading(false);
   }
+};
 
   // Password strength: 0 = weak, 1 = medium, 2 = strong
   const strength = form.password.length === 0 ? -1
@@ -63,7 +102,10 @@ const RegisterPage = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6"
-      style={{ background: 'var(--bg)' }}
+      style={{ background: `
+        radial-gradient(circle at 20% 30%, rgba(34,197,94,0.15), transparent 40%),
+          radial-gradient(circle at 80% 70%, rgba(34,197,94,0.1), transparent 40%),
+          #020617` }}
     >
       <div className="w-full max-w-md fade-up">
 

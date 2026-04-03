@@ -6,7 +6,8 @@ import {
   findOwnerByEmail,
   findOwnerById,
   updateOwner,
-  getOwnerTurfCount
+  getOwnerTurfCount,
+  findOwnerByMobile
 } from "../models/owner.model.js";
 
 
@@ -18,7 +19,16 @@ export async function registerOwner(req, res) {
     // check existing
     const existing = await findOwnerByEmail(email);
     if (existing) {
-      return res.status(400).json({ message: "Email already exists" });
+      return res.status(400).json({ success: false, message: "Email already exists" });
+    }
+
+    // 🔥 NEW: check mobile
+    const existingMobile = await findOwnerByMobile(mobile);
+    if (existingMobile) {
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number already registered",
+      });
     }
 
     // hash password

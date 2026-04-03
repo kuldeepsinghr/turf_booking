@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const LoginPage = () => {
-  const [form, setForm]             = useState({ email: '', password: '' })
-  const [showPass, setShowPass]     = useState(false)
-  const [errors, setErrors]         = useState({})
-  const [loading, setLoading]       = useState(false)
+  const [form, setForm]         = useState({ email: '', password: '' })
+  const [showPass, setShowPass] = useState(false)
+  const [errors, setErrors]     = useState({})
+  const [loading, setLoading]   = useState(false)
 
   const set = (field) => (e) => {
     setForm(f => ({ ...f, [field]: e.target.value }))
@@ -14,12 +14,9 @@ const LoginPage = () => {
 
   const validate = () => {
     const e = {}
-    if (!form.email)
-      e.email = 'Email is required'
-    else if (!/\S+@\S+\.\S+/.test(form.email))
-      e.email = 'Enter a valid email'
-    if (!form.password)
-      e.password = 'Password is required'
+    if (!form.email) e.email = 'Email is required'
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Enter a valid email'
+    if (!form.password) e.password = 'Password is required'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -27,7 +24,6 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validate()) return
-    // Static: just simulate loading for now
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
@@ -36,80 +32,105 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'var(--bg)' }}>
+    <div
+      className="min-h-screen flex px-6 lg:px-0 overflow-hidden"
+      style={{
+        background: `
+          radial-gradient(circle at 20% 30%, rgba(34,197,94,0.15), transparent 40%),
+          radial-gradient(circle at 80% 70%, rgba(34,197,94,0.1), transparent 40%),
+          #020617
+        `
+      }} 
+    >
 
-      {/* ── Left branding panel (desktop only) ── */}
+      {/* LEFT PANEL */}
       <div
-        className="hidden lg:flex flex-col justify-between w-5/12 p-12"
-        style={{ background: 'var(--bg2)', borderRight: '1px solid var(--border)' }}
+        className="hidden lg:flex overflow-hidden flex-shrink-0 flex-col justify-between w-5/12 px-16 py-14 relative"
+        style={{
+          borderRight: '1px solid var(--border)',
+          background: 'linear-gradient(180deg, rgba(2,6,23,0.9), rgba(2,6,23,1))'
+        }}
       >
+        {/* Glow */}
+        <div className="absolute w-72 h-72 bg-green-500/10 blur-3xl rounded-full top-20 left-10"></div>
+
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-base"
-            style={{ background: 'var(--green)', color: '#0b1120' }}
-          >
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base"
+            style={{ background: 'var(--green)', color: '#022c22' }}>
             T
           </div>
-          <span className="font-semibold text-base" style={{ color: 'var(--text)' }}>
+          <span className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
             TurfBook
           </span>
         </div>
 
-        {/* Tagline */}
-        <div>
-          <h2
-            className="text-3xl font-semibold leading-snug mb-4"
-            style={{ color: 'var(--text)' }}
-          >
+        {/* Content */}
+        <div className="max-w-md space-y-6 relative z-10 ml-0">
+          <h2 className="text-4xl font-semibold leading-tight tracking-tight"
+            style={{ color: 'var(--text)' }}>
             Manage your turf,<br />grow your business.
           </h2>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
-            Create listings, set time slots, and track every booking — all from one clean owner dashboard.
+
+          <p className="text-base leading-relaxed"
+            style={{ color: 'var(--muted)' }}>
+            Create listings, set time slots, and track every booking — all from one clean dashboard.
           </p>
 
           {/* Stats */}
-          <div className="flex gap-10 mt-10">
+          <div className="flex gap-12 pt-4">
             {[
-              { label: 'Active turfs',   value: '1,200+' },
+              { label: 'Active turfs', value: '1,200+' },
               { label: 'Daily bookings', value: '8,000+' },
-              { label: 'Cities',         value: '40+'    },
+              { label: 'Cities', value: '40+' },
             ].map(({ label, value }) => (
               <div key={label}>
-                <p className="text-2xl font-semibold" style={{ color: 'var(--green)' }}>{value}</p>
-                <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{label}</p>
+                <p className="text-3xl font-bold" style={{ color: 'var(--green)' }}>
+                  {value}
+                </p>
+                <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
+                  {label}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs" style={{ color: 'var(--muted)' }}>
+        <p className="text-sm relative z-10" style={{ color: 'var(--muted)' }}>
           © {new Date().getFullYear()} TurfBook · Owner Portal
         </p>
       </div>
 
-      {/* ── Right form panel ── */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm fade-up">
+      {/* RIGHT PANEL */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
+        <div className="w-full max-w-md space-y-6 animate-fade-in-up">
 
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
-              style={{ background: 'var(--green)', color: '#0b1120' }}
-            >T</div>
-            <span className="font-semibold" style={{ color: 'var(--text)' }}>TurfBook</span>
+          {/* Mobile Logo */}
+          <div className="flex items-center gap-2 mb-6 lg:hidden">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center font-bold"
+              style={{ background: 'var(--green)', color: '#022c22' }}>
+              T
+            </div>
+            <span className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
+              TurfBook
+            </span>
           </div>
 
-          <h1 className="text-2xl font-semibold mb-1" style={{ color: 'var(--text)' }}>Sign in</h1>
-          <p className="text-sm mb-8" style={{ color: 'var(--muted)' }}>
-            Enter your owner credentials to continue
-          </p>
+          {/* Heading */}
+          <div className="space-y-1">
+            <h1 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
+              Sign in
+            </h1>
+            <p className="text-base" style={{ color: 'var(--muted)' }}>
+              Enter your owner credentials to continue
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+          {/* Form */}
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
 
             {/* Email */}
-            <div>
+            <div className="space-y-1">
               <label className="label">Email address</label>
               <input
                 type="email"
@@ -122,12 +143,12 @@ const LoginPage = () => {
             </div>
 
             {/* Password */}
-            <div>
+            <div className="space-y-1">
               <label className="label">Password</label>
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}
-                  className={`field pr-10 ${errors.password ? 'field-error' : ''}`}
+                  className={`field pr-12 ${errors.password ? 'field-error' : ''}`}
                   placeholder="••••••••"
                   value={form.password}
                   onChange={set('password')}
@@ -135,7 +156,7 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowPass(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs select-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
                   style={{ color: 'var(--muted)' }}
                 >
                   {showPass ? 'Hide' : 'Show'}
@@ -144,18 +165,27 @@ const LoginPage = () => {
               {errors.password && <p className="err">{errors.password}</p>}
             </div>
 
-            {/* Submit */}
-            <button type="submit" className="btn" disabled={loading}>
+            {/* Button */}
+            <button
+              type="submit"
+              className="btn w-full py-3 mt-2"
+              disabled={loading}
+            >
               {loading
-                ? <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> Signing in...</>
+                ? <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Signing in...
+                  </span>
                 : 'Sign in'
               }
             </button>
           </form>
 
-          <p className="text-sm text-center mt-6" style={{ color: 'var(--muted)' }}>
+          {/* Footer */}
+          <p className="text-sm text-center pt-2" style={{ color: 'var(--muted)' }}>
             No account?{' '}
-            <Link to="/register" className="font-medium" style={{ color: 'var(--green)' }}>
+            <Link to="/register" className="font-medium"
+              style={{ color: 'var(--green)' }}>
               Create one
             </Link>
           </p>
