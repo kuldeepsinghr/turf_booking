@@ -1,11 +1,15 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [form, setForm]         = useState({ email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [errors, setErrors]     = useState({})
   const [loading, setLoading]   = useState(false)
+  const API = import.meta.env.VITE_API_URL;
+const navigate = useNavigate();
 
   const set = (field) => (e) => {
     setForm(f => ({ ...f, [field]: e.target.value }))
@@ -21,15 +25,48 @@ const LoginPage = () => {
     return Object.keys(e).length === 0
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!validate()) return
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      alert('Login pressed — API integration coming soon!')
-    }, 1000)
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validate()) return;
+
+  setLoading(true);
+
+  try {
+    const res = await axios.post(
+      `${API}/api/owners/login`,
+      {
+        email: form.email,
+        password: form.password,
+      },
+      {
+        withCredentials: true, // 🔥 cookie support
+      }
+    );
+
+    const data = res.data;
+
+    // ✅ success toast (from backend)
+    toast.success(data?.message || "Login successful 🎉");
+
+    // 🔁 redirect
+    navigate("/dashboard");
+
+  } catch (err) {
+    console.error(err);
+
+    const message =
+      err.response?.data?.message || "Invalid credentials";
+
+    // ❌ error toast
+    toast.error(message);
+
+    setErrors({ api: message });
+
+  } finally {
+    setLoading(false);
   }
+};
 
   return (
     <div

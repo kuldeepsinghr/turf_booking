@@ -109,6 +109,7 @@ export async function loginOwner(req, res) {
 
     if (!owner) {
       return res.status(400).json({
+        success: false,
         message: "Invalid email or password"
       });
     }
@@ -118,6 +119,7 @@ export async function loginOwner(req, res) {
 
     if (!isMatch) {
       return res.status(400).json({
+        success: false,
         message: "Invalid email or password"
       });
     }
