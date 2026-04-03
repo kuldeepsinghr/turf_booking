@@ -42,3 +42,26 @@ export async function getSlotsByTurfAndDate(turf_id, date) {
 
   return rows;
 }
+
+// lock slot (prevent double booking)
+export async function lockSlot(slot_id) {
+  const db = getDB();
+
+  const [rows] = await db.query(
+    "SELECT * FROM slots WHERE slot_id = ? FOR UPDATE",
+    [slot_id]
+  );
+
+  return rows[0];
+}
+
+// mark slot booked
+export async function markSlotBooked(slot_id, user_id) {
+  const db = getDB();
+
+  await db.query(
+    "UPDATE slots SET is_booked = TRUE, booked_by=? WHERE slot_id=?",
+    [user_id, slot_id]
+  );
+}
+
