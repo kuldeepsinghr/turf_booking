@@ -32,11 +32,11 @@ export default function DashboardPage() {
         setMobileOpen={setMobileOpen}
       />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
         
         <Topbar page={page} setMobileOpen={setMobileOpen} />
 
-        <main className="flex-1 p-7 overflow-auto">
+        <main className="flex-1 overflow-y-auto p-7">
           <PageComponent setPage={setPage} />
         </main>
 

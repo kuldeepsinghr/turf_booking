@@ -18,10 +18,10 @@ function Sidebar({ active, setActive, mobileOpen, setMobileOpen }) {
       />
 
       <aside
-        className={`fixed md:relative z-50 md:z-auto
-        w-[228px] min-h-screen bg-[#0d1829] border-r border-white/10
-        flex flex-col transition-transform duration-300
-        ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        className={`fixed md:sticky top-0 z-50 md:z-auto
+  w-[228px] h-screen bg-[#0d1829] border-r border-white/10
+  flex flex-col transition-transform duration-300
+  ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Logo */}
         <div className="px-5 pt-6 pb-5 border-b border-white/10">

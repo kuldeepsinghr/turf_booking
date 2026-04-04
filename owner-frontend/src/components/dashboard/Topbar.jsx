@@ -7,7 +7,7 @@ function Topbar({ page, setMobileOpen }) {
   };
 
   return (
-    <header className="h-[60px] flex items-center justify-between px-7 border-b border-white/10 bg-[#0d1829] shrink-0">
+    <header className="sticky top-0 z-40 h-[60px] flex items-center justify-between px-7 border-b border-white/10 bg-[#0d1829]">
       
       {/* Left */}
       <div className="flex items-center gap-3">
