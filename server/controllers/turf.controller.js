@@ -1,7 +1,8 @@
 import {
   createTurf,
   getNearbyTurfs,
-  getTurfById
+  getTurfById,
+  getTurfsByOwner
 } from "../models/turf.model.js";
 import { getCoordinates } from "../services/geocode.service.js";
 
@@ -78,6 +79,23 @@ export async function turfDetails(req, res) {
     res.json({
       success: true,
       turf
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+// 4️⃣ GET OWNER'S TURFS
+export async function getOwnerTurfs(req, res) {
+  try {
+    const ownerId = req.user.user_id; // from JWT
+
+    const turfs = await getTurfsByOwner(ownerId);
+
+    res.json({
+      success: true,
+      turfs,
     });
 
   } catch (err) {

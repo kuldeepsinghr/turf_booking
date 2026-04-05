@@ -59,3 +59,15 @@ export async function getNearbyTurfs(lat, lng, radius = 10) {
 
   return rows;
 }
+
+// get turfs by owner
+export async function getTurfsByOwner(owner_id) {
+  const db = await getDB();
+
+  const [rows] = await db.execute(
+    "SELECT * FROM turfs WHERE owner_id = ? ORDER BY turf_id DESC",
+    [owner_id]
+  );
+
+  return rows;
+}

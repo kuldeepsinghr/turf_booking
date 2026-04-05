@@ -1,43 +1,41 @@
 import { useState } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "../../components/dashboard/Sidebar";
 import Topbar from "../../components/dashboard/Topbar";
-
-import DashboardHome from "./DashboardHome";
-import TurfsPage from "./TurfsPage";
+import DashboardHome from "../../pages/dashboard/DashboardHome";
 import SlotsPage from "./SlotsPage";
 import BookingsPage from "./BookingsPage";
-
-// import "../../styles/dashboard.css";
+import TurfsPage from "./TurfsPage";
 
 export default function DashboardPage() {
-  const [page, setPage] = useState("home");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
-  const pages = {
-    home: DashboardHome,
-    turfs: TurfsPage,
-    slots: SlotsPage,
-    bookings: BookingsPage,
-  };
-
-  const PageComponent = pages[page];
+  const currentPage = location.pathname.split("/")[2] || "home";
 
   return (
     <div className="flex min-h-screen bg-[#0b1120]">
       
       <Sidebar
-        active={page}
-        setActive={setPage}
+        active={currentPage}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
       />
 
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         
-        <Topbar page={page} setMobileOpen={setMobileOpen} />
+        <Topbar page={currentPage} setMobileOpen={setMobileOpen} />
 
         <main className="flex-1 overflow-y-auto p-7">
-          <PageComponent setPage={setPage} />
+          <Routes>
+            <Route index element={<DashboardHome />} />
+            <Route path="turfs" element={<TurfsPage />} />
+            <Route path="slots" element={<SlotsPage />} />
+            <Route path="bookings" element={<BookingsPage />} />
+
+            {/* fallback */}
+            <Route path="*" element={<Navigate to="/dashboard" />} />
+          </Routes>
         </main>
 
       </div>

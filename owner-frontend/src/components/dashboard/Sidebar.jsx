@@ -1,12 +1,16 @@
 import { staticBookings } from "../../data/staticData";
+import { useNavigate } from "react-router-dom";
 
-function Sidebar({ active, setActive, mobileOpen, setMobileOpen }) {
+function Sidebar({ active, mobileOpen, setMobileOpen }) {
+  const navigate = useNavigate();
+
   const navLinks = [
-  { id: "home", label: "Dashboard", icon: "🏠" },
-  { id: "turfs", label: "My Turfs", icon: "⚽" },
-  { id: "slots", label: "Slots", icon: "🕐" },
-  { id: "bookings", label: "Bookings", icon: "📋" },
-];
+    { id: "home", label: "Dashboard", icon: "🏠" },
+    { id: "turfs", label: "My Turfs", icon: "⚽" },
+    { id: "slots", label: "Slots", icon: "🕐" },
+    { id: "bookings", label: "Bookings", icon: "📋" },
+  ];
+
   return (
     <>
       {/* Mobile overlay */}
@@ -19,9 +23,9 @@ function Sidebar({ active, setActive, mobileOpen, setMobileOpen }) {
 
       <aside
         className={`fixed md:sticky top-0 z-50 md:z-auto
-  w-[228px] h-screen bg-[#0d1829] border-r border-white/10
-  flex flex-col transition-transform duration-300
-  ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        w-[228px] h-screen bg-[#0d1829] border-r border-white/10
+        flex flex-col transition-transform duration-300
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Logo */}
         <div className="px-5 pt-6 pb-5 border-b border-white/10">
@@ -46,7 +50,7 @@ function Sidebar({ active, setActive, mobileOpen, setMobileOpen }) {
             <div
               key={id}
               onClick={() => {
-                setActive(id);
+                navigate(`/dashboard/${id === "home" ? "" : id}`);
                 setMobileOpen(false);
               }}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg mb-1 text-sm font-medium cursor-pointer transition-all

@@ -1,16 +1,18 @@
-import { useState } from "react";
-import { staticTurfs } from "../../data/staticData";
+import { useState, useEffect } from "react";
 import {  Field, Input, Select, Btn } from "../../components/dashboard/UI";
 import Modal from "../../components/dashboard/Modal";
+import axios from "axios";
+import toast from "react-hot-toast";
 
+const API = import.meta.env.VITE_API_URL;
 
 function TurfsPage() {
-  const [turfs, setTurfs] = useState(staticTurfs);
+  const [turfs, setTurfs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({
     name: "",
     address: "",
-    price: "",
+    price_per_hour: "",
     description: "",
   });
   const [tab, setTab] = useState("all");
@@ -18,27 +20,82 @@ function TurfsPage() {
   const setF = (f) => (e) =>
     setForm((p) => ({ ...p, [f]: e.target.value }));
 
-  const addTurf = () => {
-    if (!form.name || !form.address || !form.price)
-      return alert("Fill all required fields");
+  const fetchTurfs = async () => {
+    try {
+      const res = await axios.get(
+        `${API}/api/turfs/my-turfs`,
+        { withCredentials: true }
+      );
 
-    setTurfs((p) => [
-      ...p,
+      // ✅ transform backend → UI
+      const data = res.data.turfs.map((t) => ({
+        id: t.id,
+        name: t.name,
+        address: t.address,
+        price: t.price_per_hour, // 🔥 important
+        slots: t.slots || 0,
+        bookings: t.bookings || 0,
+        status: t.status || "active",
+        img: "⚽",
+      }));
+
+      setTurfs(data);
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load turfs");
+    }
+  };
+
+  const addTurf = async () => {
+  if (!form.name || !form.address || !form.price_per_hour)
+    return toast.error("Fill all required fields");
+
+  try {
+    const res = await axios.post(
+      `${API}/api/turfs/add-turf`,
       {
-        id: Date.now(),
         name: form.name,
         address: form.address,
-        price: Number(form.price),
-        slots: 0,
-        bookings: 0,
-        status: "active",
-        img: "⚽",
+        price_per_hour: Number(form.price_per_hour),
+        description: form.description,
       },
-    ]);
+      {
+        withCredentials: true, // 🔥 important
+      }
+    );
 
-    setForm({ name: "", address: "", price: "", description: "" });
+    const data = res.data;
+
+    // ✅ Success toast
+    toast.success(data?.message || "Turf created");
+
+    // ✅ Update UI 
+    await fetchTurfs();
+
+    // reset form
+    setForm({
+      name: "",
+      address: "",
+      price_per_hour: "",
+      description: "",
+    });
+
     setShowModal(false);
-  };
+
+  } catch (err) {
+    console.error(err);
+
+    const message =
+      err.response?.data?.message || "Failed to create turf";
+
+    toast.error(message);
+  }
+};
+
+useEffect(() => {
+   fetchTurfs();
+}, []);
 
   const toggleStatus = (id) =>
     setTurfs((p) =>
@@ -206,8 +263,8 @@ function TurfsPage() {
               <Input
                 type="number"
                 placeholder="800"
-                value={form.price}
-                onChange={setF("price")}
+                value={form.price_per_hour}
+                onChange={setF("price_per_hour")}
               />
             </Field>
 
