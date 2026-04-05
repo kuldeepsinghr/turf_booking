@@ -71,3 +71,55 @@ export async function getTurfsByOwner(owner_id) {
 
   return rows;
 }
+
+// update turf
+export async function updateTurf(turfId, owner_id, data) {
+  const db = getDB();
+
+  const {
+    name,
+    address,
+    latitude,
+    longitude,
+    price_per_hour,
+    description,
+    is_active,
+  } = data;
+
+  const [result] = await db.query(
+    `UPDATE turfs SET 
+      name = COALESCE(?, name),
+      address = COALESCE(?, address),
+      latitude = COALESCE(?, latitude),
+      longitude = COALESCE(?, longitude),
+      price_per_hour = COALESCE(?, price_per_hour),
+      description = COALESCE(?, description),
+      is_active = COALESCE(?, is_active)
+    WHERE turf_id = ? AND owner_id = ?`,
+    [
+      name,
+      address,
+      latitude,
+      longitude,
+      price_per_hour,
+      description,
+      is_active,
+      turfId,
+      owner_id,
+    ]
+  );
+
+  return result;
+}
+
+// delete turf
+export async function deleteTurf(turfId, owner_id) {
+  const db = getDB();
+
+  const [result] = await db.query(
+    `DELETE FROM turfs WHERE turf_id = ? AND owner_id = ?`,
+    [turfId, owner_id]
+  );
+
+  return result;
+}
