@@ -1,13 +1,9 @@
-import { useState, useEffect } from "react";
-import {  Field, Input, Select, Btn } from "../../components/dashboard/UI";
+import { useState } from "react";
+import { Field, Input, Select, Btn } from "../../components/dashboard/UI";
 import Modal from "../../components/dashboard/Modal";
-import axios from "axios";
-import toast from "react-hot-toast";
-
-const API = import.meta.env.VITE_API_URL;
+import { useTurf } from "../../context/TurfContext";
 
 function TurfsPage() {
-  const [turfs, setTurfs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -17,103 +13,10 @@ function TurfsPage() {
   });
   const [tab, setTab] = useState("all");
 
+  const { turfs, addTurf, toggleStatus, deleteTurf } = useTurf();
+
   const setF = (f) => (e) =>
     setForm((p) => ({ ...p, [f]: e.target.value }));
-
-  const fetchTurfs = async () => {
-    try {
-      const res = await axios.get(
-        `${API}/api/turfs/my-turfs`,
-        { withCredentials: true }
-      );
-
-      // ✅ transform backend → UI
-      const data = res.data.turfs.map((t) => ({
-        id: t.id,
-        name: t.name,
-        address: t.address,
-        price: t.price_per_hour, // 🔥 important
-        slots: t.slots || 0,
-        bookings: t.bookings || 0,
-        status: t.status || "active",
-        img: "⚽",
-      }));
-
-      setTurfs(data);
-
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to load turfs");
-    }
-  };
-
-  const addTurf = async () => {
-  if (!form.name || !form.address || !form.price_per_hour)
-    return toast.error("Fill all required fields");
-
-  try {
-    const res = await axios.post(
-      `${API}/api/turfs/add-turf`,
-      {
-        name: form.name,
-        address: form.address,
-        price_per_hour: Number(form.price_per_hour),
-        description: form.description,
-      },
-      {
-        withCredentials: true, // 🔥 important
-      }
-    );
-
-    const data = res.data;
-
-    // ✅ Success toast
-    toast.success(data?.message || "Turf created");
-
-    // ✅ Update UI 
-    await fetchTurfs();
-
-    // reset form
-    setForm({
-      name: "",
-      address: "",
-      price_per_hour: "",
-      description: "",
-    });
-
-    setShowModal(false);
-
-  } catch (err) {
-    console.error(err);
-
-    const message =
-      err.response?.data?.message || "Failed to create turf";
-
-    toast.error(message);
-  }
-};
-
-useEffect(() => {
-   fetchTurfs();
-}, []);
-
-  const toggleStatus = (id) =>
-    setTurfs((p) =>
-      p.map((t) =>
-        t.id === id
-          ? {
-              ...t,
-              status: t.status === "active" ? "inactive" : "active",
-            }
-          : t
-      )
-    );
-
-  const deleteTurf = (id) => {
-    if (window.confirm("Delete this turf?")) {
-      setTurfs((p) => p.filter((t) => t.id !== id));
-    }
-  };
 
   const filtered =
     tab === "all" ? turfs : turfs.filter((t) => t.status === tab);
@@ -164,7 +67,11 @@ useEffect(() => {
             {/* Banner */}
             <div className="h-24 bg-gradient-to-br from-[#0d2d1a] to-[#0f3d20] flex items-center justify-center text-4xl relative">
               {turf.img}
-              <span className={`badge ${turf.status === "active" ? "active-t" : "inactive"} absolute top-2 right-2`}>
+              <span
+                className={`badge ${
+                  turf.status === "active" ? "active-t" : "inactive"
+                } absolute top-2 right-2`}
+              >
                 {turf.status}
               </span>
             </div>
@@ -294,7 +201,25 @@ useEffect(() => {
             >
               Cancel
             </Btn>
-            <Btn onClick={addTurf}>Create turf</Btn>
+
+            {/* ✅ FIXED BUTTON */}
+            <Btn
+              onClick={async () => {
+                const success = await addTurf(form);
+
+                if (success) {
+                  setForm({
+                    name: "",
+                    address: "",
+                    price_per_hour: "",
+                    description: "",
+                  });
+                  setShowModal(false);
+                }
+              }}
+            >
+              Create turf
+            </Btn>
           </div>
         </Modal>
       )}
