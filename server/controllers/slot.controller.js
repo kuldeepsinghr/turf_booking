@@ -2,9 +2,12 @@
 
 import { insertSlots } from "../models/slot.model.js";
 import { getTurfById } from "../models/turf.model.js";
+import { updateSlot } from "../models/slot.model.js";
+import { deleteSlot } from "../models/slot.model.js";
 import { getSlotsByTurfAndDate } from "../models/slot.model.js";
 
 
+// controller for creating slots for a turf
 export async function createSlots(req, res) {
   try {
     const owner_id = req.user.user_id;
@@ -43,6 +46,7 @@ if (!turf || turf.owner_id !== owner_id) {
 }
 
 
+// get slots for a turf on a specific date
 export async function getTurfSlots(req, res) {
   try {
     const { turf_id } = req.params;
@@ -60,6 +64,47 @@ export async function getTurfSlots(req, res) {
     res.json({
       success: true,
       slots
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+
+// controller for updating a slot (owner only)
+export async function updateSlotController(req, res) {
+  try {
+    const { slot_id } = req.params;
+    const owner_id = req.user.user_id;
+
+    // 🔥 OPTIONAL: validate ownership via turf_id (advanced)
+
+    const result = await updateSlot(slot_id, req.body);
+
+    res.json({
+      success: true,
+      message: "Slot updated",
+      affectedRows: result.affectedRows
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+
+// controller for deleting a slot (owner only)
+export async function deleteSlotController(req, res) {
+  try {
+    const { slot_id } = req.params;
+
+    const result = await deleteSlot(slot_id);
+
+    res.json({
+      success: true,
+      message: "Slot deleted",
+      affectedRows: result.affectedRows
     });
 
   } catch (err) {
