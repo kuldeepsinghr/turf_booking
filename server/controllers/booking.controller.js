@@ -120,11 +120,11 @@ export async function getOwnerBookingsAPI(req, res) {
     const owner_id = req.user.user_id;
 
     // 🔥 role check
-    if (req.user.role !== "owner") {
-      return res.status(403).json({
-        message: "Only owners allowed"
-      });
-    }
+    // if (req.user.role !== "owner") {
+    //   return res.status(403).json({
+    //     message: "Only owners allowed"
+    //   });
+    // }
 
     const bookings = await getOwnerBookings(owner_id);
 
