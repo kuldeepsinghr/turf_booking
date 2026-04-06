@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuth } from "./AuthContext"; 
 
 const API = import.meta.env.VITE_API_URL;
 
 const TurfContext = createContext();
 
 export const TurfProvider = ({ children }) => {
+  const { user, loading: authLoading } = useAuth();
   const [turfs, setTurfs] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -142,8 +144,10 @@ export const TurfProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchTurfs();
-  }, []);
+  if (user) {
+    fetchTurfs();   // ✅ only when logged in
+  }
+}, [user]);
 
   return (
     <TurfContext.Provider

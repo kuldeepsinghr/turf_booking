@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
+
 
 
 const RegisterPage = () => {
@@ -10,6 +12,8 @@ const RegisterPage = () => {
   const [showPass, setShowPass] = useState(false)
   const [errors, setErrors]     = useState({})
   const [loading, setLoading]   = useState(false)
+  const { checkAuth } = useAuth();
+
   const [form, setForm]         = useState({
     name: '', email: '', mobile: '', password: ''
   })
@@ -70,6 +74,8 @@ const handleSubmit = async (e) => {
 
     // ✅ ONLY ONE SUCCESS TOAST
     toast.success(data?.message || "Registration successful 🎉");
+
+    await checkAuth(); // ✅ update auth state
 
     // ✅ navigate AFTER success
     navigate("/dashboard");

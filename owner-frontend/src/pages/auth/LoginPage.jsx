@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 const LoginPage = () => {
   const [form, setForm]         = useState({ email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [errors, setErrors]     = useState({})
   const [loading, setLoading]   = useState(false)
+  const { checkAuth } = useAuth();
   const API = import.meta.env.VITE_API_URL;
 const navigate = useNavigate();
 
@@ -46,9 +48,11 @@ const navigate = useNavigate();
 
     const data = res.data;
 
+    
     // ✅ success toast (from backend)
     toast.success(data?.message || "Login successful 🎉");
-
+    
+    await checkAuth(); // ✅ update auth state
     // 🔁 redirect
     navigate("/dashboard");
 
