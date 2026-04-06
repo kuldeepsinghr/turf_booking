@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import AppProviders from './providers/AppProviders';
 
 function App() {
   return (
@@ -36,7 +37,9 @@ function App() {
           path="/dashboard/*"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <AppProviders>
+                <DashboardPage />
+              </AppProviders>
             </ProtectedRoute>
           }
         />
