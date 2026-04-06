@@ -29,36 +29,40 @@ export default function Home() {
       return parseFloat(a.distance) - parseFloat(b.distance);
     });
 
-  
-
   return (
-    <div className="min-h-screen bg-[#0a0f0a] text-white">
-      <Header searchQuery={search} onSearch={setSearch} />
+    <div className="min-h-screen bg-turf-dark text-white relative overflow-hidden">
 
-      <FilterBar
-        activeSport={activeSport}
-        setActiveSport={setActiveSport}
-        activeSort={sortBy}
-        setActiveSort={setSortBy}
-      />
+      {/* 🔥 Background Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-green-500/10 blur-[120px] pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto px-4 py-5">
-        {filtered.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-lg text-gray-400">No turfs found</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((turf, i) => (
-              <TurfCard
-                key={turf.id}
-                turf={turf}
-                index={i}
-                onClick={() => navigate(`/turf/${turf.id}`)}
-              />
-            ))}
-          </div>
-        )}
+      <div className="relative z-10">
+        <Header searchQuery={search} onSearch={setSearch} />
+
+        <FilterBar
+          activeSport={activeSport}
+          setActiveSport={setActiveSport}
+          activeSort={sortBy}
+          setActiveSort={setSortBy}
+        />
+
+        <div className="max-w-6xl mx-auto px-4 py-5">
+          {filtered.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-lg text-gray-400">No turfs found</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((turf, i) => (
+                <TurfCard
+                  key={turf.id}
+                  turf={turf}
+                  index={i}
+                  onClick={() => navigate(`/turf/${turf.id}`)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -17,11 +17,17 @@
 }
 
 @theme {
-  --color-turf-dark: #0a0f0a;
-  --color-turf-card: #161e16;
-  --color-turf-border: #1f2d1f;
-  --color-turf-accent: #a3e635;
-  --color-turf-muted: #111711;
+  --color-turf-dark: #020617;
+  --color-turf-card: #0b1220;
+  --color-turf-border: #1e293b;
+  --color-turf-accent: #22c55e;
+  --color-turf-accent-glow: #4ade80;
+  --color-turf-muted: #020617;
+}
+
+body {
+  background: radial-gradient(circle at top, #020617, #020617);
+  color: #e2e8f0;
 }
 
 /* :root {

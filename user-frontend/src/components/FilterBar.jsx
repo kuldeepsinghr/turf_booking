@@ -6,8 +6,9 @@ const sorts = ["Nearest", "Top Rated", "Price: Low", "Price: High"];
 
 export default function FilterBar({ activeSport, setActiveSport, activeSort, setActiveSort }) {
   return (
-    <div className="border-b border-[#1f2d1f] bg-[#0a0f0a]">
+    <div className="border-b border-turf-border bg-turf-dark/70 backdrop-blur-xl">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto scrollbar-none">
+
         {/* Sport filters */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {sports.map((sport) => (
@@ -16,8 +17,8 @@ export default function FilterBar({ activeSport, setActiveSport, activeSort, set
               onClick={() => setActiveSport(sport)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all flex-shrink-0 ${
                 activeSport === sport
-                  ? "bg-[#a3e635] text-[#0a0f0a] font-bold shadow-lg shadow-[#a3e635]/20"
-                  : "bg-[#161e16] text-[#8ba98b] border border-[#1f2d1f] hover:border-[#16a34a] hover:text-[#e8f5e8]"
+                  ? "bg-gradient-to-r from-green-400 to-emerald-500 text-black font-bold shadow-lg shadow-green-500/20"
+                  : "bg-turf-card text-gray-400 border border-turf-border hover:border-green-400 hover:text-white"
               }`}
             >
               {sport}
@@ -26,11 +27,12 @@ export default function FilterBar({ activeSport, setActiveSport, activeSort, set
         </div>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-[#1f2d1f] flex-shrink-0" />
+        <div className="w-px h-6 bg-turf-border flex-shrink-0" />
 
         {/* Sort */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <SlidersHorizontal size={14} className="text-[#4b6b4b]" />
+          <SlidersHorizontal size={14} className="text-gray-500" />
+
           <div className="flex gap-1.5">
             {sorts.map((s) => (
               <button
@@ -38,8 +40,8 @@ export default function FilterBar({ activeSport, setActiveSport, activeSort, set
                 onClick={() => setActiveSort(s)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0 ${
                   activeSort === s
-                    ? "bg-[#161e16] border border-[#16a34a] text-[#a3e635]"
-                    : "text-[#4b6b4b] hover:text-[#8ba98b]"
+                    ? "bg-turf-card border border-green-400 text-green-400"
+                    : "text-gray-500 hover:text-gray-300"
                 }`}
               >
                 {s}
@@ -47,6 +49,7 @@ export default function FilterBar({ activeSport, setActiveSport, activeSort, set
             ))}
           </div>
         </div>
+
       </div>
     </div>
   );
