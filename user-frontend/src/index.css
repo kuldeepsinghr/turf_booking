@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.4s ease forwards;
+}
+
+@theme {
+  --color-turf-dark: #0a0f0a;
+  --color-turf-card: #161e16;
+  --color-turf-border: #1f2d1f;
+  --color-turf-accent: #a3e635;
+  --color-turf-muted: #111711;
+}
+
 /* :root {
   --text: #6b6375;
   --text-h: #08060d;
