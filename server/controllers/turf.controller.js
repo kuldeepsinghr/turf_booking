@@ -75,15 +75,16 @@ export async function nearbyTurfs(req, res) {
 export async function turfDetails(req, res) {
   try {
     const { turf_id } = req.params;
+    const date = req.query.date || null;
 
-    const turf = await getTurfById(turf_id);
+    const turf = await getTurfById(turf_id, date);
 
     res.json({
       success: true,
-      turf
+      turf,
     });
-
   } catch (err) {
+    console.error(err); // 👈 ADD THIS
     res.status(500).json({ error: err.message });
   }
 }

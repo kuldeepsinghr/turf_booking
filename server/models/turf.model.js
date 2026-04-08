@@ -25,15 +25,47 @@ export async function createTurf(data) {
 }
 
 // get turf by id
-export async function getTurfById(turfId) {
+export async function getTurfById(turfId, date) {
   const db = getDB();
 
-  const [rows] = await db.query(
-    "SELECT * FROM turfs WHERE turf_id = ?",
+  const [turfRows] = await db.query(
+    `
+    SELECT 
+      t.*, 
+      o.owner_id, o.name AS owner_name, o.email, o.mobile
+    FROM turfs t
+    JOIN owners o ON t.owner_id = o.owner_id
+    WHERE t.turf_id = ?
+    `,
     [turfId]
   );
 
-  return rows[0];
+  if (!turfRows.length) return null;
+
+  const turf = turfRows[0];
+
+  const [slotRows] = await db.query(
+    `
+    SELECT 
+      slot_id, \`date\`, start_time, end_time, is_booked, price
+    FROM slots   -- ✅ FIXED HERE
+    WHERE turf_id = ?
+    ${date ? "AND \`date\` = ?" : ""}
+    ORDER BY start_time
+    `,
+    date ? [turfId, date] : [turfId]
+  );
+
+  return {
+    ...turf,
+    owner: {
+      owner_id: turf.owner_id,
+      name: turf.owner_name,
+      email: turf.email,
+      mobile: turf.mobile,
+    },
+    slots: slotRows,
+  };
 }
 
 // get nearby turfs
