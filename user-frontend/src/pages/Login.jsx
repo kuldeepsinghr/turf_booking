@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, User, Phone, ChevronDown, ArrowRight, Info, CheckCircle } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const COUNTRIES = [
   { flag: "🇮🇳", code: "+91", len: 10, name: "India" }
@@ -49,6 +51,11 @@ export default function LoginPage({ onLogin }) {
   const [timerActive, setTimerActive] = useState(false);
   const [showCountryDrop, setShowCountryDrop] = useState(false);
   const otpInputRef = useRef(null);
+  const navigate = useNavigate();
+const location = useLocation();
+const { login } = useAuth();
+
+const [loading, setLoading] = useState(false);
 
   const country = COUNTRIES[countryIdx];
   const nameOk = name.trim().length >= 2;
@@ -349,13 +356,39 @@ export default function LoginPage({ onLogin }) {
           </p>
         </div>
 
-        <button
-        //   onClick={startOtp}
-          disabled={!formReady}
-          className="w-full bg-emerald-400 disabled:bg-[#1a3d2b] disabled:text-[#2d6b4f] text-black font-bold rounded-2xl py-4 text-sm flex items-center justify-center gap-2 hover:bg-emerald-300 active:scale-95 transition-all mb-5"
-        >
-          Continue <ArrowRight className="w-4 h-4" />
-        </button>
+       <button
+  onClick={async () => {
+    if (!formReady) return;
+
+    setLoading(true);
+
+    const res = await login({
+      name: name.trim(),
+      mobile: (country.code + phone).replace(/\s/g, ""),
+    });
+
+    setLoading(false);
+
+    if (res.success) {
+      // 🔥 Redirect logic (important for booking flow)
+      const redirect = location.state?.redirectAfterLogin;
+      const data = location.state?.bookingData;
+
+      if (redirect && data) {
+        navigate(redirect, { state: data });
+      } else {
+        navigate("/");
+      }
+    } else {
+      alert(res.message);
+    }
+  }}
+  disabled={!formReady || loading}
+  className="w-full bg-emerald-400 disabled:bg-[#1a3d2b] disabled:text-[#2d6b4f] text-black font-bold rounded-2xl py-4 text-sm flex items-center justify-center gap-2 hover:bg-emerald-300 active:scale-95 transition-all mb-5"
+>
+  {loading ? "Please wait..." : "Continue"}
+  <ArrowRight className="w-4 h-4" />
+</button>
 
         {/* Divider */}
         {/* <div className="flex items-center gap-3 mb-4">

@@ -13,7 +13,7 @@ export default function AuthProvider({ children }) {
   // ✅ Load user on refresh
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/profile`, { withCredentials: true });
+      const res = await axios.get(`${BASE_URL}/api/user/profile`, { withCredentials: true });
       setUser(res.data.user);
     } catch (err) {
       setUser(null);
@@ -29,7 +29,7 @@ export default function AuthProvider({ children }) {
   // ✅ Login / Register
   const login = async ({ name, mobile }) => {
     try {
-      const res = await axios.post(`${BASE_URL}/auth`, { name, mobile }, { withCredentials: true });
+      const res = await axios.post(`${BASE_URL}/api/user/auth`, { name, mobile }, { withCredentials: true });
 
       setUser(res.data.user);
 
