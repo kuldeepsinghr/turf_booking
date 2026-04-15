@@ -5,6 +5,7 @@ import {
   Calendar, Phone, Share2, Heart, Info
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; 
 
 const amenityIcons = {
   Floodlights: <Lightbulb className="w-3.5 h-3.5" />,
@@ -20,6 +21,7 @@ export default function SlotPicker({ turf, onBack, selectedDate, onDateChange })
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
   // const [date, setDate] = useState(getTodayStr());
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const date = selectedDate;
 const setDate = onDateChange;
@@ -371,16 +373,31 @@ const setDate = onDateChange;
                   </div>
                 </div>
                 <button
-                  onClick={() =>
-    navigate("/booking-success", {
+                  onClick={() => {
+  if (!isAuthenticated) {
+    navigate("/login", {
       state: {
-        turf,
-        selectedSlots,
-        totalPrice,
-        date,
+        redirectTo: "/booking-success",
+        bookingData: {
+          turf,
+          selectedSlots,
+          totalPrice,
+          date,
+        },
       },
-    })
+    });
+    return;
   }
+
+  navigate("/booking-success", {
+    state: {
+      turf,
+      selectedSlots,
+      totalPrice,
+      date,
+    },
+  });
+}}
                   className="flex items-center gap-2 bg-emerald-400 hover:bg-emerald-300 active:scale-95 text-black font-bold px-7 py-3.5 rounded-xl transition-all duration-150 text-sm"
                 >
                   Confirm Booking

@@ -371,14 +371,16 @@ const [loading, setLoading] = useState(false);
 
     if (res.success) {
       // 🔥 Redirect logic (important for booking flow)
-      const redirect = location.state?.redirectAfterLogin;
+      const redirect = location.state?.redirectTo;
       const data = location.state?.bookingData;
 
       if (redirect && data) {
-        navigate(redirect, { state: data });
-      } else {
-        navigate("/");
-      }
+  navigate(redirect, { state: data });
+} else if (redirect) {
+  navigate(redirect);
+} else {
+  navigate("/");
+}
     } else {
       alert(res.message);
     }

@@ -4,15 +4,35 @@ import TurfDetails from "./pages/TurfDetails";
 import Profile from "./pages/Profile";
 import Booking from "./pages/Booking";
 import LoginPage from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/turf/:id" element={<TurfDetails />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/booking-success" element={<Booking />} />
-      <Route path="/login" element={<LoginPage/>} />
+
+      {/* 🔒 Protected routes */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/booking-success"
+        element={
+          <ProtectedRoute>
+            <Booking />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Public */}
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 }
