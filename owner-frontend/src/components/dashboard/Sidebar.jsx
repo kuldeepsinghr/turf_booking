@@ -1,8 +1,20 @@
 import { staticBookings } from "../../data/staticData";
 import { useNavigate } from "react-router-dom";
+import { useBooking } from "../../context/BookingContext";
+import { useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 function Sidebar({ active, mobileOpen, setMobileOpen }) {
   const navigate = useNavigate();
+  const { bookings } = useBooking();
+  const { profile, fetchOwnerProfile } = useAuth();
+
+
+useEffect(() => {
+  if (!profile) {
+    fetchOwnerProfile();
+  }
+}, []);
 
   const navLinks = [
     { id: "home", label: "Dashboard", icon: "🏠" },
@@ -69,9 +81,7 @@ function Sidebar({ active, mobileOpen, setMobileOpen }) {
               {id === "bookings" && (
                 <span className="ml-auto text-[10px] font-bold px-2 py-[2px] rounded-full bg-green-500/15 text-green-500">
                   {
-                    staticBookings.filter(
-                      (b) => b.status === "confirmed"
-                    ).length
+                    bookings.filter((b) => b.status === "confirmed").length
                   }
                 </span>
               )}
@@ -82,16 +92,25 @@ function Sidebar({ active, mobileOpen, setMobileOpen }) {
         {/* Owner Card */}
         <div className="px-2 py-3 border-t border-white/10">
           <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/5">
-            <div className="w-8 h-8 rounded-md bg-green-500/15 flex items-center justify-center text-sm font-bold text-green-500">
-              VP
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-[#f0f4f8] truncate">
-                Vikram Patel
-              </div>
-              <div className="text-[11px] text-[#64748b]">Owner</div>
-            </div>
-          </div>
+  
+  {/* Avatar */}
+  <div className="w-8 h-8 rounded-md bg-green-500/15 flex items-center justify-center text-sm font-bold text-green-500">
+    {profile?.name?.[0] || "O"}
+  </div>
+
+  {/* Info */}
+  <div className="min-w-0">
+    <div className="text-xs font-semibold text-[#f0f4f8] truncate">
+      {profile?.name || "Owner"}
+    </div>
+    <div className="text-[11px] text-[#64748b]">
+      {profile?.email || "—"}
+    </div>
+    <div className="text-[10px] text-gray-500">
+  {profile?.total_turfs} turfs
+</div>
+  </div>
+</div>
 
           <button
             onClick={() => alert("Logout")}
