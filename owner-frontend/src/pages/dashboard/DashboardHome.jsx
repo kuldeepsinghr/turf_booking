@@ -1,10 +1,36 @@
 import StatCard from "../../components/dashboard/StatCard";
 import { staticBookings, staticTurfs, staticSlots } from "../../data/staticData";
 import {Btn} from "../../components/dashboard/UI";
+import { useEffect } from "react";
+
+
+import { useBooking } from "../../context/BookingContext";
+import { useTurf } from "../../context/TurfContext";
+import { useSlot } from "../../context/SlotContext";
+import { useAuth } from "../../context/AuthContext";
 
 
 function DashboardHome({ setPage }) {
-  const totalRevenue = staticBookings
+   const { bookings, fetchOwnerBookings } = useBooking();
+  const { turfs } = useTurf();
+  const { slots } = useSlot();
+  const { profile, fetchOwnerProfile } = useAuth();
+
+  const confirmed = bookings.filter(b => b.status === "confirmed").length;
+const cancelled = bookings.filter(b => b.status === "cancelled").length;
+const total = bookings.length || 1;
+
+
+
+// ✅ Fetch bookings when dashboard loads
+useEffect(() => {
+  fetchOwnerBookings();
+  // fetchOwnerProfile();
+  }, []);
+
+
+   // ✅ Revenue (only confirmed)
+  const totalRevenue = bookings
     .filter((b) => b.status === "confirmed")
     .reduce((s, b) => s + b.amount, 0);
 
@@ -14,133 +40,99 @@ function DashboardHome({ setPage }) {
       {/* Welcome */}
       <div className="mb-7">
         <h1 className="text-[22px] font-bold text-[#f0f4f8] mb-1">
-          Good morning, Vikram 👋
+          Good morning, {profile?.name || "Owner"} 👋
         </h1>
         <p className="text-sm text-[#64748b]">
           Here's what's happening with your turfs today.
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="stagger grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-7">
-        <StatCard icon="⚽" label="Total turfs" value={staticTurfs.length} sub="↑ 1 this month" color="#22c55e" delay={0} />
-        <StatCard icon="📋" label="Total bookings" value={staticBookings.length} sub="↑ 3 this week" color="#3b82f6" delay={60} />
-        <StatCard icon="🕐" label="Available slots" value={staticSlots.filter((s) => !s.booked).length} sub="across all turfs" color="#f59e0b" delay={120} />
-        <StatCard icon="₹" label="Revenue" value={`₹${totalRevenue.toLocaleString()}`} sub="confirmed only" color="#a855f7" delay={180} />
+    {/* ✅ Stats */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-7">
+        <StatCard icon="⚽" label="Total turfs" value={turfs.length} />
+        <StatCard icon="📋" label="Total bookings" value={bookings.length} />
+        <StatCard
+          icon="🕐"
+          label="Available slots"
+          value={slots.filter((s) => !s.is_booked).length}
+        />
+        <StatCard
+          icon="₹"
+          label="Revenue"
+          value={`₹${totalRevenue}`}
+        />
       </div>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5">
 
-        {/* Recent bookings */}
-        <div className="bg-[#0f1e32] border border-white/10 rounded-2xl overflow-hidden">
-          
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-            <span className="font-semibold text-sm text-[#f0f4f8]">
-              Recent bookings
-            </span>
-            <Btn
-              variant="ghost"
-              onClick={() => setPage("bookings")}
-              className="px-3 py-1.5 text-xs"
-            >
-              View all
-            </Btn>
-          </div>
+    {/* Recent bookings */}
+<div className="bg-[#0f1e32] border border-white/10 rounded-2xl overflow-hidden">
+  
+  <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+    <span className="font-semibold text-sm text-[#f0f4f8]">
+      Recent bookings
+    </span>
+    <Btn onClick={() => setPage("bookings")}>
+      View all
+    </Btn>
+  </div>
 
-          {/* List */}
-          <div>
-            {staticBookings.slice(0, 5).map((b, i) => (
-              <div
-                key={b.id}
-                className={`flex items-center gap-3.5 px-5 py-3 ${
-                  i < 4 ? "border-b border-white/10" : ""
-                } hover:bg-white/5`}
-              >
-                {/* Avatar */}
-                <div className="w-8.5 h-8.5 rounded-lg bg-green-500/10 flex items-center justify-center text-xs font-bold text-green-500 shrink-0">
-                  {b.user
-                    .split(" ")
-                    .map((w) => w[0])
-                    .join("")}
-                </div>
+  <div>
+    {bookings.slice(0, 5).map((b, i) => (
+      <div
+        key={b.id}
+        className={`flex items-center gap-3.5 px-5 py-3 ${
+          i < 4 ? "border-b border-white/10" : ""
+        }`}
+      >
+        {/* Avatar */}
+        <div className="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-xs text-green-500">
+          {b.user?.[0]}
+        </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-[#f0f4f8] truncate">
-                    {b.user}
-                  </div>
-                  <div className="text-[11px] text-[#64748b]">
-                    {b.turf} · {b.slot}
-                  </div>
-                </div>
-
-                {/* Price + Status */}
-                <div className="text-right">
-                  <div className="text-sm font-semibold text-[#f0f4f8]">
-                    ₹{b.amount}
-                  </div>
-                  <span className={`badge ${b.status}`}>
-                    {b.status}
-                  </span>
-                </div>
-              </div>
-            ))}
+        {/* Info */}
+        <div className="flex-1">
+          <div className="text-sm text-white">{b.user}</div>
+          <div className="text-xs text-gray-400">
+            {b.turf} · {b.slot}
           </div>
         </div>
+
+        {/* Price */}
+        <div className="text-right">
+          <div className="text-sm text-white">₹{b.amount}</div>
+          <span className={`badge ${b.status}`}>
+            {b.status}
+          </span>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
         {/* Right Column */}
         <div className="flex flex-col gap-4">
 
           {/* My turfs */}
-          <div className="bg-[#0f1e32] border border-white/10 rounded-2xl overflow-hidden">
-            
-            <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-              <span className="font-semibold text-sm text-[#f0f4f8]">
-                My turfs
-              </span>
-              <Btn
-                variant="ghost"
-                onClick={() => setPage("turfs")}
-                className="px-2.5 py-1 text-[11px]"
-              >
-                Manage
-              </Btn>
-            </div>
+          {turfs.map((t, i) => (
+  <div key={t.id} className="flex items-center gap-3 px-4 py-3">
+    <div className="w-8 h-8 bg-green-500/10 flex items-center justify-center">
+      ⚽
+    </div>
 
-            {staticTurfs.map((t, i) => (
-              <div
-                key={t.id}
-                className={`flex items-center gap-3 px-4 py-3 ${
-                  i < staticTurfs.length - 1
-                    ? "border-b border-white/10"
-                    : ""
-                } hover:bg-white/5`}
-              >
-                <div className="w-8.5 h-8.5 rounded-lg bg-green-500/10 flex items-center justify-center text-base">
-                  {t.img}
-                </div>
+    <div className="flex-1">
+      <div className="text-sm text-white">{t.name}</div>
+      <div className="text-xs text-gray-400">
+        ₹{t.price}/hr
+      </div>
+    </div>
 
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-[#f0f4f8] truncate">
-                    {t.name}
-                  </div>
-                  <div className="text-[11px] text-[#64748b]">
-                    ₹{t.price}/hr
-                  </div>
-                </div>
-
-                <span
-                  className={`badge ${
-                    t.status === "active" ? "active-t" : "inactive"
-                  }`}
-                >
-                  {t.status}
-                </span>
-              </div>
-            ))}
-          </div>
+    <span className={`badge ${t.status === "active" ? "active-t" : "inactive"}`}>
+      {t.status}
+    </span>
+  </div>
+))}
 
           {/* Booking Status */}
           <div className="bg-[#0f1e32] border border-white/10 rounded-2xl p-4">
@@ -151,14 +143,12 @@ function DashboardHome({ setPage }) {
             {[
               {
                 label: "Confirmed",
-                count: staticBookings.filter((b) => b.status === "confirmed")
-                  .length,
+                count: confirmed,
                 color: "#22c55e",
               },
               {
                 label: "Cancelled",
-                count: staticBookings.filter((b) => b.status === "cancelled")
-                  .length,
+                count: cancelled,
                 color: "#ef4444",
               },
             ].map(({ label, count, color }) => (
@@ -179,7 +169,7 @@ function DashboardHome({ setPage }) {
                     className="h-full rounded transition-all duration-500"
                     style={{
                       background: color,
-                      width: `${(count / staticBookings.length) * 100}%`,
+                      width: `${(count / total) * 100}%`,
                     }}
                   />
                 </div>

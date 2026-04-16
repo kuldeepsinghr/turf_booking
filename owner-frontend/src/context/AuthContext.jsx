@@ -7,6 +7,19 @@ const API = import.meta.env.VITE_API_URL;
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(null);
+
+const fetchOwnerProfile = async () => {
+  try {
+    const res = await axios.get(`${API}/api/owners/profile`, {
+      withCredentials: true
+    });
+
+    setProfile(res.data);
+  } catch (err) {
+    console.error("Profile fetch failed");
+  }
+};
 
   const checkAuth = async () => {
     try {
@@ -24,10 +37,11 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuth();
+    fetchOwnerProfile(); // ✅ auto load profile
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, checkAuth }}>
+    <AuthContext.Provider value={{ user, loading, checkAuth, fetchOwnerProfile, profile}}>
       {children}
     </AuthContext.Provider>
   );
