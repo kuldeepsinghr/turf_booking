@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; 
+import { useBooking } from "../context/BookingContext";
 
 const amenityIcons = {
   Floodlights: <Lightbulb className="w-3.5 h-3.5" />,
@@ -20,6 +21,7 @@ const amenityIcons = {
 export default function SlotPicker({ turf, onBack, selectedDate, onDateChange }) {
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
+  const { createBooking } = useBooking();
   // const [date, setDate] = useState(getTodayStr());
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -373,7 +375,7 @@ const setDate = onDateChange;
                   </div>
                 </div>
                 <button
-                  onClick={() => {
+                 onClick={async () => {
   if (!isAuthenticated) {
     navigate("/login", {
       state: {
@@ -389,6 +391,20 @@ const setDate = onDateChange;
     return;
   }
 
+  // 🔥 Call API for each slot
+  for (let slot of selectedSlots) {
+    const res = await createBooking({
+      turf_id: turf.id,
+      slot_id: slot.id,
+    });
+
+    if (!res.success) {
+      alert(res.message);
+      return;
+    }
+  }
+
+  // ✅ After success
   navigate("/booking-success", {
     state: {
       turf,

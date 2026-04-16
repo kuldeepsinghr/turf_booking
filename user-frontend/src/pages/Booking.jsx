@@ -1,10 +1,21 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useBooking } from "../context/BookingContext";
+import { useEffect } from "react";
 
 export default function Booking() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { fetchMyBookings, bookings } = useBooking();
 
-  if (!state) return <div>No booking data</div>;
+  useEffect(() => {
+  if (!state) {
+    fetchMyBookings();
+  }
+}, []);
+
+if (!state && bookings.length === 0) {
+  return <div>Loading...</div>;
+}
 
   const { turf, selectedSlots, totalPrice, date } = state;
 

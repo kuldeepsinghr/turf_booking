@@ -57,12 +57,28 @@ export async function getUserBookings(req, res) {
     const user_id = req.user.user_id;
 
     const [rows] = await db.query(
-      `SELECT b.*, s.date, s.start_time, s.end_time
-       FROM bookings b
-       JOIN slots s ON b.slot_id = s.slot_id
-       WHERE b.user_id = ?`,
-      [user_id]
-    );
+  `SELECT 
+    b.booking_id,
+    b.status,
+    b.total_price,
+    b.created_at,
+
+    s.date,
+    s.start_time,
+    s.end_time,
+
+    t.turf_id,
+    t.name AS turf_name,
+    t.address
+
+   FROM bookings b
+   JOIN slots s ON b.slot_id = s.slot_id
+   JOIN turfs t ON b.turf_id = t.turf_id
+
+   WHERE b.user_id = ?
+   ORDER BY b.created_at DESC`,
+  [user_id]
+);
 
     res.json({
       success: true,

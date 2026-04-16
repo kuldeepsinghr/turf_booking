@@ -1,33 +1,18 @@
+import { useEffect } from "react";
 import BookingCard from "../components/BookingCard";
-
-const user = {
-  name: "Aditya Sharma",
-  email: "aditya@gmail.com",
-  location: "Mumbai, India",
-};
-
-const bookings = [
-  {
-    id: 1,
-    turfName: "Andheri Sports Arena",
-    location: "Andheri West",
-    date: "Sunday, 6 April",
-    slots: ["6:00 AM - 7:00 AM", "7:00 AM - 8:00 AM"],
-    total: 1700,
-    status: "Confirmed",
-  },
-  {
-    id: 2,
-    turfName: "Bandra Turf Club",
-    location: "Bandra",
-    date: "Monday, 7 April",
-    slots: ["8:00 PM - 9:00 PM"],
-    total: 1200,
-    status: "Completed",
-  },
-];
+import { useBooking } from "../context/BookingContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
+  const { bookings, fetchMyBookings } = useBooking();
+  const { user } = useAuth(); // 👈 get logged-in user
+
+  useEffect(() => {
+    fetchMyBookings();
+  }, []);
+
+  if (!user) return <div className="text-white p-6">Loading...</div>;
+
   return (
     <div className="min-h-screen bg-turf-dark text-white">
 
@@ -43,14 +28,14 @@ export default function Profile() {
           
           {/* Avatar */}
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-turf-accent to-green-700 flex items-center justify-center text-lg font-bold text-black">
-            {user.name[0]}
+            {user.name?.[0]}
           </div>
 
           {/* Info */}
           <div>
             <h2 className="font-bold text-white">{user.name}</h2>
             <p className="text-sm text-gray-400">{user.email}</p>
-            <p className="text-xs text-gray-500">{user.location}</p>
+            <p className="text-xs text-gray-500">{user.mobile}</p>
           </div>
         </div>
 
@@ -61,9 +46,13 @@ export default function Profile() {
           </h2>
 
           <div className="space-y-3">
-            {bookings.map((b) => (
-              <BookingCard key={b.id} booking={b} />
-            ))}
+            {bookings.length === 0 ? (
+              <p className="text-gray-500">No bookings yet</p>
+            ) : (
+              bookings.map((b) => (
+                <BookingCard key={b.booking_id} booking={b} />
+              ))
+            )}
           </div>
         </div>
 

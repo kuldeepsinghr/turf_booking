@@ -7,9 +7,13 @@ export default function BookingCard({ booking }) {
       {/* Top */}
       <div className="flex justify-between items-start mb-2">
         <div>
-          <h3 className="text-white font-bold">{booking.turfName}</h3>
+          <h3 className="text-white font-bold">
+            {booking.turf_name}
+          </h3>
+
           <p className="text-xs text-gray-400 flex items-center gap-1">
-            <MapPin className="w-3 h-3" /> {booking.location}
+            <MapPin className="w-3 h-3" />
+            {booking.address}
           </p>
         </div>
 
@@ -23,23 +27,20 @@ export default function BookingCard({ booking }) {
         📅 {booking.date}
       </p>
 
-      {/* Slots */}
-      <div className="flex flex-wrap gap-2 mb-3">
-        {booking.slots.map((s, i) => (
-          <span
-            key={i}
-            className="px-2 py-1 text-xs bg-turf-muted border border-turf-border rounded-md text-gray-300"
-          >
-            <Clock className="w-3 h-3 inline mr-1" />
-            {s}
-          </span>
-        ))}
+      {/* Time */}
+      <div className="mb-3">
+        <span className="px-2 py-1 text-xs bg-turf-muted border border-turf-border rounded-md text-gray-300">
+          <Clock className="w-3 h-3 inline mr-1" />
+          {booking.start_time} - {booking.end_time}
+        </span>
       </div>
 
       {/* Price */}
       <div className="flex justify-between items-center">
         <span className="text-xs text-gray-400">Total Paid</span>
-        <span className="text-turf-accent font-bold">₹{booking.total}</span>
+        <span className="text-turf-accent font-bold">
+          ₹{booking.total_price}
+        </span>
       </div>
     </div>
   );
