@@ -33,6 +33,30 @@ const setDate = onDateChange;
     return new Date().toISOString().split("T")[0];
   }
 
+  const handleCall = () => {
+  if (!turf?.owner?.mobile) {
+    alert("Phone number not available");
+    return;
+  }
+
+  window.location.href = `tel:${turf.owner.mobile}`;
+};
+
+const handleDirections = () => {
+  if (turf.lat && turf.lng) {
+    window.open(
+      `https://www.google.com/maps?q=${turf.lat},${turf.lng}`,
+      "_blank"
+    );
+  } else {
+    const encoded = encodeURIComponent(turf.location);
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${encoded}`,
+      "_blank"
+    );
+  }
+};
+
   function getNext7Days() {
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date();
@@ -250,7 +274,7 @@ const setDate = onDateChange;
             <div className="flex items-center justify-between mb-4 px-1">
               <span className="text-sm text-gray-400">Starting from</span>
               <div className="flex items-baseline gap-1">
-                <span className="text-emerald-400 text-xl font-bold">₹{turf.slots?.[0]?.price || 600}</span>
+                <span className="text-emerald-400 text-xl font-bold">₹{turf?.price}</span>
                 <span className="text-gray-500 text-xs">/hr</span>
               </div>
             </div>
@@ -269,11 +293,11 @@ const setDate = onDateChange;
 
         {/* Contact / Info strip */}
         <div className="flex gap-2 mb-5">
-          <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#1a1d27] border border-white/10 rounded-xl text-gray-300 text-xs hover:border-white/20 transition-all">
+          <button  onClick={handleCall} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#1a1d27] border border-white/10 rounded-xl text-gray-300 text-xs hover:border-white/20 transition-all">
             <Phone className="w-3.5 h-3.5 text-emerald-400" />
             Call Venue
           </button>
-          <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#1a1d27] border border-white/10 rounded-xl text-gray-300 text-xs hover:border-white/20 transition-all">
+          <button onClick={handleDirections} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#1a1d27] border border-white/10 rounded-xl text-gray-300 text-xs hover:border-white/20 transition-all">
             <MapPin className="w-3.5 h-3.5 text-emerald-400" />
             Get Directions
           </button>

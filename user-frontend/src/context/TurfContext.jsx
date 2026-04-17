@@ -123,7 +123,7 @@ const fetchNearbyTurfs = () => {
         id: t.turf_id,
         name: t.name,
         location: t.address,
-        price: t.price_par_hour,
+        price: Number(t.price_per_hour),
 
         image:
           "https://images.unsplash.com/photo-1574629810360-7efbbe195018",
@@ -146,7 +146,11 @@ const fetchNearbyTurfs = () => {
         })),
 
         // ✅ OWNER INFO
-        owner: t.owner,
+        owner: {
+  name: t.owner?.name,
+  mobile: t.owner?.mobile,
+  email: t.owner?.email,
+}
       };
 
       setSelectedTurf(formatted);
