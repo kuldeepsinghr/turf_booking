@@ -96,6 +96,26 @@ export default function BookingProvider({ children }) {
     }
   };
 
+
+  const getBookingById = async (id) => {
+  try {
+    const res = await axios.get(
+      `${BASE_URL}/api/bookings/booking/${id}`,
+      { withCredentials: true }
+    );
+
+    return {
+      success: true,
+      booking: res.data.booking,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      message: err.response?.data?.message || "Failed",
+    };
+  }
+};
+
   return (
     <BookingContext.Provider
       value={{
@@ -104,6 +124,7 @@ export default function BookingProvider({ children }) {
         createBooking,
         fetchMyBookings,
         cancelBooking,
+        getBookingById
       }}
     >
       {children}

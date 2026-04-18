@@ -1,141 +1,149 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useBooking } from "../context/BookingContext";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
-
-function generateBookingId(date, turfId) {
-  const hash = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `TRF-${date?.replace(/-/g, "")}-${hash}`;
-}
 
 export default function Booking() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { fetchMyBookings, bookings } = useBooking();
+  const { id } = useParams();
+
+  const { getBookingById } = useBooking();
+
   const qrRef = useRef(null);
+  const [bookingData, setBookingData] = useState(null);
 
+  // ✅ Redirect if no state and no id
   useEffect(() => {
-    if (!state) fetchMyBookings();
-  }, []);
+    if (!state && !id) {
+      navigate("/profile");
+    }
+  }, [state, id, navigate]);
 
+  // ✅ Fetch booking if opened directly
   useEffect(() => {
-    if (!state || !qrRef.current) return;
-    const bookingId = state?.bookingIds?.[0];
+    if (!state && id) {
+      (async () => {
+        const res = await getBookingById(id);
+        if (res.success) {
+          setBookingData(res.booking);
+        } else {
+          alert("Booking not found");
+          navigate("/");
+        }
+      })();
+    }
+  }, [id, state, navigate]);
+
+  // ✅ Normalize data
+  const data = state
+    ? {
+        turf: state.turf,
+        selectedSlots: state.selectedSlots,
+        totalPrice: state.totalPrice,
+        date: state.date,
+        bookingId: state?.bookingIds?.[0],
+      }
+    : bookingData && {
+        turf: {
+          name: bookingData.turf_name,
+          location: bookingData.address,
+        },
+        selectedSlots: [
+          {
+            time: bookingData.start_time,
+            endTime: bookingData.end_time,
+            price: bookingData.total_price,
+          },
+        ],
+        totalPrice: bookingData.total_price,
+        date: bookingData.date,
+        bookingId: bookingData.booking_id,
+      };
+
+  // ✅ QR Code
+  useEffect(() => {
+    if (!qrRef.current || !data) return;
+
     const qrData = JSON.stringify({
-      id: bookingId,
-      venue: state.turf?.name,
-      location: state.turf?.location,
-      date: state.date,
-      slots: state.selectedSlots?.map((s) => `${s.time}-${s.endTime}`),
-      total: state.totalPrice,
+      id: data.bookingId,
+      venue: data.turf?.name,
+      location: data.turf?.location,
+      date: data.date,
+      slots: data.selectedSlots?.map(
+        (s) => `${s.time}-${s.endTime}`
+      ),
+      total: data.totalPrice,
     });
-    QRCode.toCanvas(qrRef.current, qrData, {
-      width: 90,
-      color: { dark: "#000000", light: "#ffffff" },
-    });
-  }, [state]);
 
-  if (!state && bookings.length === 0)
-    return <div className="min-h-screen bg-[#0c0e16] flex items-center justify-center text-white">Loading...</div>;
+    QRCode.toCanvas(qrRef.current, qrData, { width: 90 });
+  }, [data]);
 
-  const { turf, selectedSlots, totalPrice, date } = state;
-  const bookingId = state?.bookingIds?.[0];
+  // ✅ Loading
+  if (!data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading...
+      </div>
+    );
+  }
+
+  const { turf, selectedSlots, totalPrice, date, bookingId } = data;
 
   const formattedDate = new Date(date).toLocaleDateString("en-IN", {
-    day: "numeric", month: "short", year: "numeric",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 
   return (
-    <div className="min-h-screen bg-[#0c0e16] text-white p-6 flex flex-col items-center font-sans">
+    <div className="min-h-screen bg-[#0c0e16] text-white p-6 flex flex-col items-center">
 
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-3">
-          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-          Confirmed
-        </div>
-        <h1 className="text-3xl font-black tracking-tight">Booking Confirmed</h1>
-        <p className="text-gray-500 text-sm mt-1">Your slot is reserved. See you on the pitch!</p>
+        <h1 className="text-3xl font-black">Booking Confirmed</h1>
       </div>
 
-      {/* Pass Card */}
-      <div className="w-full max-w-sm bg-[#13151f] border border-[#1f2235] rounded-2xl overflow-hidden shadow-2xl">
+      {/* Card */}
+      <div className="w-full max-w-sm bg-[#13151f] border border-[#1f2235] rounded-2xl">
 
-        {/* Top section */}
-        <div className="p-5 border-b border-dashed border-[#1f2235] relative">
-          {/* Notch cutouts */}
-          <div className="absolute bottom-[-12px] left-[-12px] w-6 h-6 bg-[#0c0e16] rounded-full z-10" />
-          <div className="absolute bottom-[-12px] right-[-12px] w-6 h-6 bg-[#0c0e16] rounded-full z-10" />
+        {/* Top */}
+        <div className="p-5 border-b border-[#1f2235]">
+          <p className="font-bold text-lg">{turf.name}</p>
+          <p className="text-xs text-gray-500">{turf.location}</p>
 
-          {/* Venue */}
-          <div className="flex items-start gap-3 mb-5">
-            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl flex-shrink-0">
-              ⚽
-            </div>
-            <div>
-              <p className="font-bold text-lg leading-tight">{turf.name}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{turf.location}</p>
-            </div>
-          </div>
+          <p className="mt-3 font-bold">{formattedDate}</p>
 
-          {/* Meta grid */}
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div className="bg-white/[0.03] border border-[#1f2235] rounded-xl p-2.5">
-              <p className="text-[10px] uppercase tracking-widest text-gray-600 mb-1">Date</p>
-              <p className="text-sm font-bold text-gray-100">{formattedDate}</p>
+          {selectedSlots.map((s, i) => (
+            <div key={i} className="flex justify-between text-sm mt-1">
+              <span>{s.time} – {s.endTime}</span>
+              <span className="text-emerald-400">₹{s.price}</span>
             </div>
-            <div className="bg-white/[0.03] border border-[#1f2235] rounded-xl p-2.5">
-              <p className="text-[10px] uppercase tracking-widest text-gray-600 mb-1">Slots</p>
-              <p className="text-sm font-bold text-gray-100">{selectedSlots.length} slot{selectedSlots.length > 1 ? "s" : ""}</p>
-            </div>
-          </div>
-
-          {/* Slots */}
-          <div className="flex flex-col gap-1.5">
-            {selectedSlots.map((s, i) => (
-              <div key={i} className="flex justify-between items-center bg-white/[0.02] border border-[#1f2235] rounded-lg px-3 py-2 text-sm">
-                <span className="text-gray-400">{s.time} – {s.endTime}</span>
-                <span className="text-emerald-400 font-medium">₹{s.price}</span>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
 
-        {/* Bottom — QR pass */}
+        {/* Bottom */}
         <div className="p-5">
-          <div className="flex items-center gap-4">
-            <div className="bg-white p-2 rounded-xl flex-shrink-0">
-              <canvas ref={qrRef} />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-gray-600 mb-1">Booking ID</p>
-              <p className="font-black text-base tracking-wider text-gray-100 mb-2">{bookingId}</p>
-              <p className="text-[11px] text-gray-600 leading-relaxed">
-                Scan at venue entry<br />
-                Valid for {formattedDate} only
-              </p>
-            </div>
-          </div>
+          <canvas ref={qrRef} />
 
-          <div className="flex justify-between items-center mt-4 pt-4 border-t border-[#1f2235]">
-            <span className="text-sm text-gray-500">Total Paid</span>
-            <span className="text-2xl font-black text-emerald-400">₹{totalPrice.toLocaleString("en-IN")}</span>
+          <p className="mt-3 text-sm">Booking ID: {bookingId}</p>
+
+          <div className="flex justify-between mt-4">
+            <span>Total</span>
+            <span className="text-emerald-400 font-bold">
+              ₹{totalPrice}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-3 mt-6 w-full max-w-sm">
-        <button className="flex-1 py-3 rounded-xl bg-[#13151f] border border-[#1f2235] text-gray-400 text-sm font-medium">
-          Share Pass
-        </button>
-        <button
-          onClick={() => navigate("/")}
-          className="flex-1 py-3 rounded-xl bg-emerald-400 text-black text-sm font-bold"
-        >
-          Back Home
-        </button>
-      </div>
+      {/* Button */}
+      <button
+        onClick={() => navigate("/")}
+        className="mt-6 px-6 py-3 bg-emerald-400 text-black rounded-xl"
+      >
+        Back Home
+      </button>
     </div>
   );
 }

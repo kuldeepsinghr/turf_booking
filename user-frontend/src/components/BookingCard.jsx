@@ -1,8 +1,11 @@
 import { MapPin, Clock } from "lucide-react";
 
-export default function BookingCard({ booking }) {
+export default function BookingCard({ booking, onClick }) {
   return (
-    <div className="bg-turf-card border border-turf-border rounded-2xl p-4">
+    <div
+      onClick={onClick}
+      className="bg-turf-card border border-turf-border rounded-2xl p-4 cursor-pointer hover:scale-[1.02] transition"
+    >
       
       {/* Top */}
       <div className="flex justify-between items-start mb-2">
@@ -22,12 +25,10 @@ export default function BookingCard({ booking }) {
         </span>
       </div>
 
-      {/* Date */}
       <p className="text-sm text-gray-300 mb-2">
         📅 {booking.date}
       </p>
 
-      {/* Time */}
       <div className="mb-3">
         <span className="px-2 py-1 text-xs bg-turf-muted border border-turf-border rounded-md text-gray-300">
           <Clock className="w-3 h-3 inline mr-1" />
@@ -35,7 +36,6 @@ export default function BookingCard({ booking }) {
         </span>
       </div>
 
-      {/* Price */}
       <div className="flex justify-between items-center">
         <span className="text-xs text-gray-400">Total Paid</span>
         <span className="text-turf-accent font-bold">

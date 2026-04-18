@@ -7,14 +7,13 @@ import LoginPage from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
-
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/turf/:id" element={<TurfDetails />} />
 
-      {/* 🔒 Protected routes */}
+      {/* 🔒 Protected */}
       <Route
         path="/profile"
         element={
@@ -24,8 +23,19 @@ export default function App() {
         }
       />
 
+      {/* ✅ NEW ROUTE */}
       <Route
-        path="/booking-success"
+        path="/booking/:id"
+        element={
+          <ProtectedRoute>
+            <Booking />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Existing */}
+      <Route
+        path="/booking-success/:id"
         element={
           <ProtectedRoute>
             <Booking />
@@ -35,13 +45,13 @@ export default function App() {
 
       {/* Public */}
       <Route
-  path="/login"
-  element={
-    <PublicRoute>
-      <LoginPage />
-    </PublicRoute>
-  }
-/>
+        path="/login"
+        element={
+          <PublicRoute>
+            <LoginPage />
+          </PublicRoute>
+        }
+      />
     </Routes>
   );
 }

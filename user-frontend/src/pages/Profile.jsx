@@ -2,10 +2,12 @@ import { useEffect } from "react";
 import BookingCard from "../components/BookingCard";
 import { useBooking } from "../context/BookingContext";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { bookings, fetchMyBookings } = useBooking();
-  const { user } = useAuth(); // 👈 get logged-in user
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchMyBookings();
@@ -25,13 +27,10 @@ export default function Profile() {
 
         {/* Profile Card */}
         <div className="bg-turf-card border border-turf-border rounded-2xl p-5 mb-6 flex items-center gap-4">
-          
-          {/* Avatar */}
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-turf-accent to-green-700 flex items-center justify-center text-lg font-bold text-black">
             {user.name?.[0]}
           </div>
 
-          {/* Info */}
           <div>
             <h2 className="font-bold text-white">{user.name}</h2>
             <p className="text-sm text-gray-400">{user.email}</p>
@@ -50,7 +49,11 @@ export default function Profile() {
               <p className="text-gray-500">No bookings yet</p>
             ) : (
               bookings.map((b) => (
-                <BookingCard key={b.booking_id} booking={b} />
+                <BookingCard
+                  key={b.booking_id}
+                  booking={b}
+                  onClick={() => navigate(`/booking-success/${b.booking_id}`)}
+                />
               ))
             )}
           </div>

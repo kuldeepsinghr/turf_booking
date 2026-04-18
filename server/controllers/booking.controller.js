@@ -153,3 +153,46 @@ export async function getOwnerBookingsAPI(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
+
+
+export async function getBookingById(req, res) {
+  try {
+    const db = getDB();
+    const user_id = req.user.user_id;
+    const { id } = req.params;
+
+    const [rows] = await db.query(
+      `SELECT 
+        b.booking_id,
+        b.status,
+        b.total_price,
+        b.created_at,
+
+        s.date,
+        s.start_time,
+        s.end_time,
+
+        t.name AS turf_name,
+        t.address
+
+      FROM bookings b
+      JOIN slots s ON b.slot_id = s.slot_id
+      JOIN turfs t ON b.turf_id = t.turf_id
+
+      WHERE b.booking_id = ? AND b.user_id = ?`,
+      [id, user_id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.json({
+      success: true,
+      booking: rows[0],
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}

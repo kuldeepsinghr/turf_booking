@@ -429,11 +429,14 @@ const handleDirections = () => {
       return;
     }
 
-    bookingIds.push(res.booking_id);
+    bookingIds.push(res.booking);
   }
 
+    const firstBookingId = bookingIds[0];
+
+
   // ✅ After success
-  navigate("/booking-success", {
+  navigate(`/booking-success/${firstBookingId}`, {
     state: {
       turf,
       selectedSlots,
