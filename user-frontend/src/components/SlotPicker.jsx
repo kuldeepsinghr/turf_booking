@@ -415,6 +415,8 @@ const handleDirections = () => {
     return;
   }
 
+  let bookingIds = []; // ✅ store real IDs
+
   // 🔥 Call API for each slot
   for (let slot of selectedSlots) {
     const res = await createBooking({
@@ -426,6 +428,8 @@ const handleDirections = () => {
       alert(res.message);
       return;
     }
+
+    bookingIds.push(res.booking_id);
   }
 
   // ✅ After success
@@ -435,6 +439,7 @@ const handleDirections = () => {
       selectedSlots,
       totalPrice,
       date,
+      bookingIds
     },
   });
 }}

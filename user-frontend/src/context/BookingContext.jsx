@@ -24,7 +24,7 @@ export default function BookingProvider({ children }) {
 
       return {
         success: true,
-        data: res.data,
+        booking: res.data.booking_id,
       };
     } catch (err) {
       return {
